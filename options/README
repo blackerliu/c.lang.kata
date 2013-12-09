@@ -1,0 +1,9 @@
+@BUILD:
+
+make or make CC=arm-none-linux-gnueabi-gcc
+
+@Command:
+
+this example display usage for long option of command line.
+
+that's all.

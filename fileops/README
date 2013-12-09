@@ -1,0 +1,16 @@
+
+@BUILD:
+
+make or make CC=arm-none-linux-gnueabi-gcc
+
+@Command:
+
+ln -s file_utils file_read
+ln -s file_utils file_write
+
+then run :
+
+./file_read
+./file_write
+
+that's all.

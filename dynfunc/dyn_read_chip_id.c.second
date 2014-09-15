@@ -1,0 +1,101 @@
+#define NULL ((void*)0)
+
+int new_vip_chip_id_read(void)
+{
+ 	typedef unsigned char U8;
+	typedef unsigned short U16;
+	typedef int (*read_id)();
+
+	static U8  reg_idx = 10 ;
+	volatile U16 *pins  = NULL ;
+    volatile U16 *pfunc = NULL ;
+    int nresult = 0;
+	int i = 0;
+ 
+	// get Value must be arranged from [10, 15]
+    if(reg_idx >=15 )
+	{
+		reg_idx = 10;
+	}
+	else
+	{
+		reg_idx++ ;
+	}
+ 
+    pins  = (U16*)malloc(32);
+	if(pins == NULL )
+	{
+		return 0;
+	}
+
+    memset(pins, 32, 0);
+	i = 0;
+
+	pins[0] = (0x2470);  					// subi 	r0, r0, 8
+	pins[1] = (0x2070);  					// addi    r0, r0, 8
+	pins[2] = (0x8000 | (reg_idx << 8));  	// ld rx,(r0,0)
+    pins[3] = (0x9000 | (reg_idx << 8));  	// st rx,(r0,0)
+	pins[4] = (0x1211);  					// mov  r1,r1
+
+    pfunc = (U16*)malloc(128);
+	if (pfunc == NULL )
+	{
+		if(pins != NULL)
+		{
+			free(pins);
+			pins = NULL;
+		}
+		return 0;
+	}
+
+	memset(pfunc, 128, 0);
+    i = 0;
+
+	pfunc[i++] = 0x24f0;        //subi    r0, r0, 16
+	pfunc[i++] = 0x9820;        //st  r8, (r0, 8)
+	pfunc[i++] = 0x1208;        //mov r8, r0
+	pfunc[i++] = 0x6007;        //movi    r7, 0
+	pfunc[i++] = 0x9718;        //st  r7, (r8, 4)
+	pfunc[i++] = 0x6007;        //movi    r7, 0
+	pfunc[i++] = 0x9708;        //st  r7, (r8, 0)                                                                          
+	pfunc[i++] = 0x33d7;        //bgeni   r7, 29
+	pfunc[i++] = 0x35f7;        //bseti   r7, r7, 31
+	pfunc[i++] = 0x9708;        //st  r7, (r8, 0)
+	pfunc[i++] = 0x8708;        //ld  r7, (r8, 0)
+	pfunc[i++] = 0x3547;        //bseti   r7, r7, 20
+	pfunc[i++] = 0x3557;        //bseti   r7, r7, 21
+	pfunc[i++] = 0x9708;        //st  r7, (r8, 0)
+	pfunc[i++] = 0x8708;        //ld  r7, (r8, 0)
+	pfunc[i++] = 0x34d7;        //bseti   r7, r7, 13
+	pfunc[i++] = 0x34f7;        //bseti   r7, r7, 15
+	pfunc[i++] = 0x9708;        //st  r7, (r8, 0)
+	pfunc[i++] = 0x8708;        //ld  r7, (r8, 0)
+	pfunc[i++] = 0x3477;        //bseti   r7, r7, 7
+	pfunc[i++] = 0x3487;        //bseti   r7, r7, 8
+	pfunc[i++] = 0x9708;        //st  r7, (r8, 0)
+	pfunc[i++] = 0x8708;        //ld  r7, (r8, 0)
+	pfunc[i++] = 0x8707;        //ld  r7, (r7, 0)
+	pfunc[i++] = 0x3f07;        //lsri    r7, r7, 16
+	pfunc[i++] = 0x2e37;      	//andi	r7, r7, 3
+ 	pfunc[i++] = 0x9718;      	//st	r7, (r8, 4)
+	pfunc[i++] = 0x8718;      	//ld	r7, (r8, 4)
+	pfunc[i++] = 0x1272;      	//mov	r2, r7
+	pfunc[i++] = 0x1280;      	//mov	r0, r8
+	pfunc[i++] = 0x8820;      	//ld	r8, (r0, 8)
+	pfunc[i++] = 0x20f0;      	//addi	r0, r0, 16
+	pfunc[i++] = 0x00cf;      	//jmp	r15
+
+    nresult = (*((read_id)pfunc))();
+ 
+    memset(pins, 32, 0);
+    memset(pfunc, 128, 0);
+ 
+    free(pins);
+    free(pfunc);
+ 
+	pins = NULL;
+    pfunc = NULL;
+   
+    return nresult;
+}
+

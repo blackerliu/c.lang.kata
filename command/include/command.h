@@ -3,7 +3,7 @@
 
 #define NAMESIZE 16
 #define CTLRSIZE 8
-
+#define MAX_COMMAND_NUM 	(32)
 
 #ifndef true
     #define true    (1 == 1)
@@ -12,7 +12,7 @@
     #define false   (!true)
 #endif
 
-unsigned char cmd_string[1024];
+#define log_printf	printf
 
 struct serial_device {
 	char name[NAMESIZE];
@@ -29,25 +29,23 @@ struct serial_device {
 };
 
 //-------
-
+typedef struct cmd_tbl_s	cmd_tbl_t;
 
 struct cmd_tbl_s {
-	char		*name;		/* Command Name			*/
+	char	*name;		/* Command Name			*/
 	int		maxargs;	/* maximum number of arguments	*/
 	int		repeatable;	/* autorepeat allowed?		*/
-					/* Implementation function	*/
-	unsigned int		(*cmd)(struct cmd_tbl_s *,int, int,char *[]);
+						/* Implementation function	*/
+	unsigned int (*cmd)(struct cmd_tbl_s *,int, int,char *[]);
 	char		*usage;		/* Usage message	(short)	*/
 };
 
 
-typedef struct cmd_tbl_s	cmd_tbl_t;
-
-
 
 /* common/command.c */
-cmd_tbl_t *find_cmd(const char *cmd);
-cmd_tbl_t *find_cmd_tbl (const char *cmd, cmd_tbl_t *table, int table_len);
+extern cmd_tbl_t *find_cmd(const char *cmd);
+extern cmd_tbl_t *find_cmd_tbl (const char *cmd, cmd_tbl_t *table, int table_len);
+extern int  register_cmd(cmd_tbl_t  *cmd_item);
 
 extern int cmd_usage(char *name);
 
@@ -65,30 +63,12 @@ cmd_tbl_t __u_boot_cmd_##name Struct_Section = {#name, maxargs, rep, cmd, usage}
 {#name, maxargs, rep, cmd, usage}
 
 /********************************extern string***********************************/
-//extern void * memmove(void * dest,const void *src,U32 count);
-//extern char *strcpy(char *dest, const char *src);
-//extern int strlen(const char *str);
-//extern char *strchr(const char *str, char ch);
-//extern int strcmp(const char *str1, const char *str2);
-//extern int strncmp(const char *str1, const char *str2, int num);
-//extern int memcmp(const void *ptr1, const void *ptr2, unsigned long n);
 
 /********************************extern uart*************************************/
 extern void uart_init(void);
-//extern int getc(void);
-//extern void putc(const char c);
-//extern void puts(const char *s);
-//extern void printf(const char *fmt, ...);
-
-/********************************************************************************/
 extern int cmd_auto_complete(const char *const prompt, char *buf, int *np, int *colp);
-
-
-/******************************************************************************/
 extern void clear_ctrlc(void);
-
 extern int had_ctrlc (void);
-
 extern unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base);
 #endif
 

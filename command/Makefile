@@ -12,7 +12,7 @@ CPPFLAGS = -I include
 CFLAGS  =  $(CPPFLAGS)  -r -c  -O0 -g
 
 all: 
-	$(CC) main.c command.c console.c -o main -Iinclude -g -static
+	$(CC) -Iinclude -g -static -o main main.c command.c console.c cmd_reg.c 
 
 main.elf : $(COBJ) 
 	$(LD)  $^ -o $@ \

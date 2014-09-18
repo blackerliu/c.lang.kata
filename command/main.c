@@ -273,9 +273,9 @@ static int parse_line (char *line, char *argv[])
 
 /**********************************************************************
 * Function 		:readline_into_buffer
-* Description 	:read command string into global array -- buff
-* Arguments 	:[in]prompt		显示的字符串
-				 [out]buffer	存放命令字符串的buff
+* Description 	:read command string into global array -- buffer
+* Arguments 	:[in]prompt		display prompt string like =>
+				 [out]buffer	string buffer for saving input chars
 * Return 		:
 * Others 		:
 ***********************************************************************/
@@ -302,7 +302,7 @@ int readline_into_buffer (const char *const prompt, char * buffer)
 		c = getchar();
 
 		//*p++ = c;
-		//printf("%c\n",c);
+		//printf("Get char : %c\n", c);
 
 		/*
 		* Special character handling
@@ -366,20 +366,23 @@ int readline_into_buffer (const char *const prompt, char * buffer)
 					}
 					*p++ = c;
 					++n;
+					//printf("Console Buf: %s\n", console_buffer);
 				}
 				else
 				{			/* Buffer full		*/
 					putchar ('\a');
 				}
 		}
+
 	}
+
 }
 
 /********************************************************************
 * Function		:char_convert
-* Description	:将命令字符串的格式稍作修改
-* Arguments		:[in]buffer 输入的命令字符串
-				 [out]lastcommand 格式修改后的命令字符串
+* Description	:
+* Arguments		:[in]buffer       input command string
+				 [out]lastcommand formatted command string
 * Return 		:
 * Others		:
 ********************************************************************/
@@ -389,8 +392,9 @@ int char_convert(char * lastcommand, char * buffer)
 	int i;
 	int j;
 	int len = strlen(buffer);
-	
 
+//	return chip_error_no_error;	
+	
 	for(j = 0;j < len;j++)
 	{
 		if(((buffer[j]>='a')&&(buffer[j]<='z'))
@@ -399,7 +403,8 @@ int char_convert(char * lastcommand, char * buffer)
 			||(buffer[j] == '(')
 			||(buffer[j] == ')')
 			||(buffer[j] == ',')
-			||(buffer[j] == ';'))
+			||(buffer[j] == ';')
+			||(buffer[j] == ' '))
 		{		
 			continue;
 		}	
@@ -411,8 +416,8 @@ int char_convert(char * lastcommand, char * buffer)
 	
 	if(*(p+len-1) != ')')
 	{
-		*(p+len) = ')';
-		len += 1;
+//		*(p+len) = ')';
+//		len += 1;
 		*(p+len) = '\n';
 	}
 	else
@@ -502,7 +507,7 @@ int char_convert(char * lastcommand, char * buffer)
 /********************************************************************
 * Function 		:readline
 * Description	:read data from console into buffer
-* Arguments		:[in]prompt	打印的字符串
+* Arguments		:[in]prompt	
 * Return 		:
 * Others		:
 *********************************************************************/
@@ -590,14 +595,14 @@ int run_command (const char *cmd, int flag)
 			rc = -1;	/* no command at all */
 			continue;
 		}
+		printf("argc = %d\n", argc);
 
 		/* Look up command in command table */
-		printf("%s\n",argv[0]);
-		printf("%s\n",argv[1]);
-		//printf("%s\n",argv[2]);
+		//printf("%s\n",argv[0]);
+		//printf("%s\n",argv[1]);
 		cmdtp = find_cmd(argv[0]);
 		if (cmdtp == NULL) {
-			printf ("gxluarUnknown command %s\n", argv[0]);
+			printf ("[AutoTestCommand]: Unknown command %s\n", argv[0]);
 			rc = -1;	/* give up after bad command */
 			continue;
 		}
@@ -618,10 +623,9 @@ int run_command (const char *cmd, int flag)
 
 			rc = -1;
 
-			printf("gxluar%d\n",value_return);
+			printf("[AutoTestCommand]: return = %d\n",value_return);
 			//printf("gxluar1\n");
 		}
-
 		
 
 		repeatable &= cmdtp->repeatable;
@@ -651,9 +655,6 @@ void command_main_loop(void)
 	int rc = 1;
 	int flag;
 
-	// open console uart
-	// uart_init();
-	
 	while(1)
 	{
 		memset((void *)lastcommand, 0, CONFIG_SYS_CBSIZE);
@@ -677,7 +678,9 @@ void command_main_loop(void)
 			}
 			else
 			{
-				rc = run_command (lastcommand, flag);
+				//rc = run_command (lastcommand, flag);
+				printf("Console Buffer: %s\n", console_buffer);
+				rc = run_command (console_buffer, flag);
 			}
 			
 			if (rc <= 0)
@@ -695,5 +698,18 @@ void command_main_loop(void)
 
 int main(void)
 {
+
+	// open console uart
+	// uart_init();
+	
+	// register commands list
+	extern cmd_tbl_t cmd_set_reg;
+	extern cmd_tbl_t cmd_get_reg;
+
+//	printf("register cmd begin.\n");
+	register_cmd(&cmd_set_reg);
+	register_cmd(&cmd_get_reg);
+//	printf("register cmd finish.\n");
+
 	command_main_loop();
 }

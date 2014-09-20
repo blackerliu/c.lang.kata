@@ -19,7 +19,7 @@ unsigned int do_chip_set_reg(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		return 2;
 	}
 
-	log_printf("[Command] will set value into reg.\n");
+	log_printf("==[Command] will set value into reg.\n");
 	//*(volatile  unsigned int *)addr = regval;
 	return 0;
 }
@@ -29,7 +29,7 @@ unsigned int do_chip_get_reg(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	unsigned int addr;
 	unsigned int regval = 5;
 
-	if (argc < 1) {
+	if (argc < 2) {
 		return 1;
 	}
 
@@ -41,8 +41,8 @@ unsigned int do_chip_get_reg(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 	else
 	{
-		log_printf("[Command] will get value from reg.\n");
-		regval = 0x55AA55BB;
+		log_printf("==[Command] will get value from reg.\n");
+		regval = 12345678;
 //		regval = *(volatile unsigned int *)addr;
 		return regval;
 	}

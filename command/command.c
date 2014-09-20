@@ -8,8 +8,6 @@
 
 static char tmp_buf[CONFIG_SYS_CBSIZE];	/* copy of console I/O buffer	*/
 
-//cmd_tbl_t  __u_boot_cmd_start;
-//cmd_tbl_t  __u_boot_cmd_end;
 cmd_tbl_t  __command_list[MAX_COMMAND_NUM];
 unsigned int __command_list_used = 0;
 
@@ -277,7 +275,7 @@ int register_cmd(cmd_tbl_t *cmd_item)
 	
 	cmdnew = __command_list + __command_list_used;
 	memcpy(cmdnew, cmd_item, sizeof(cmd_tbl_t));
-	printf("Register new command :%s\n",cmdnew->name );
+	log_printf("Register command :%s\n",cmdnew->name );
 
 	__command_list_used++;
 

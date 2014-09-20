@@ -19,7 +19,7 @@ main.elf : $(COBJ)
  
 
 %.o : %.c	
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) -g $(CFLAGS) $< -o $@
 
 %.o : %.S
 	$(CC) $(CFLAGS) $< -o $@

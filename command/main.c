@@ -49,7 +49,7 @@ static char hist_lines[HIST_MAX][HIST_SIZE];
 
 
 #define putnstr(str,n)	do {			\
-		printf ("%.*s", (int)n, str);	\
+		log_printf ("%.*s", (int)n, str);	\
 	} while (0)
 
 
@@ -107,7 +107,7 @@ static void process_macros (const char *input, char *output)
 {
 	char c, prev;
 	const char *varname_start = NULL;
-	int inputcnt = strlen ((void *)input);
+	int inputcnt = strlen ((char*)input);
 	int outputcnt = CONFIG_SYS_CBSIZE;
 	int state = 0;
 	
@@ -117,7 +117,7 @@ static void process_macros (const char *input, char *output)
 	/* 3 = waiting for '''  */
 
 
-	//printf ("[PROCESS_MACROS] INPUT len %d: \"%s\"\n", strlen (input),input);
+	//log_printf ("[PROCESS_MACROS] INPUT len %d: \"%s\"\n", strlen (input),input);
 
 	prev = '\0';		/* previous character   */
 
@@ -237,12 +237,15 @@ static void process_macros (const char *input, char *output)
 static int parse_line (char *line, char *argv[])
 {
 	int nargs = 0;
-
+	//log_printf("Line: %s|\n",line);
 	while (nargs < CONFIG_SYS_MAXARGS) {
-
 		 //skip any white space 
 		while ((*line == ' ') || (*line == '\t')) {
 			++line;
+		}
+
+		if(*line == '\n'){
+			*line = '\0';
 		}
 
 		if (*line == '\0') {	// end of line, no more args	
@@ -253,11 +256,15 @@ static int parse_line (char *line, char *argv[])
 		argv[nargs++] = line;	// begin of argument string	
 
 		// find end of string 
-		while (*line && (*line != ' ') && (*line != '\t')) {
+		while (*line && (*line != ' ') && (*line != '\t') && (*line != '\n')) {
 			++line;
 		}
 
-		if (*line == '\0') {	// end of line, no more args	
+		if(*line == '\n'){
+			*line = '\0';
+		}
+
+		if (*line == '\0' ) {	// end of line, no more args	
 			argv[nargs] = NULL;
 			return (nargs);
 		}
@@ -265,7 +272,7 @@ static int parse_line (char *line, char *argv[])
 		*line++ = '\0';		//terminate current arg	 
 	}
 
-	printf("** Too many args (max. %d) **\n", CONFIG_SYS_MAXARGS);
+	log_printf("** Too many args (max. %d) **\n", CONFIG_SYS_MAXARGS);
 
 	return (nargs);
 }
@@ -293,7 +300,7 @@ int readline_into_buffer (const char *const prompt, char * buffer)
 	if (prompt) 
 	{
 		plen = strlen (prompt);
-		puts (prompt);
+		printf(prompt);
 	}
 	col = plen;
 	for (;;) 
@@ -302,7 +309,7 @@ int readline_into_buffer (const char *const prompt, char * buffer)
 		c = getchar();
 
 		//*p++ = c;
-		//printf("Get char : %c\n", c);
+		//log_printf("Get char : %c\n", c);
 
 		/*
 		* Special character handling
@@ -312,7 +319,7 @@ int readline_into_buffer (const char *const prompt, char * buffer)
 			case '\r':				/* Enter		*/
 			case '\n':
 				*p = '\0';
-				puts ("\r\n");
+				//puts ("\r\n");
 				return (p - p_buf);
 			case '\0':				/* nul			*/
 				continue;
@@ -362,11 +369,11 @@ int readline_into_buffer (const char *const prompt, char * buffer)
 					else
 					{
 						++col;		/* echo input		*/
-						putchar (c);
+						//putchar (c);
 					}
 					*p++ = c;
 					++n;
-					//printf("Console Buf: %s\n", console_buffer);
+					//log_printf("Console Buf: %s\n", console_buffer);
 				}
 				else
 				{			/* Buffer full		*/
@@ -413,18 +420,18 @@ int char_convert(char * lastcommand, char * buffer)
 			return chip_error_cmd_error;
 		}
 	}
-	
+
 	if(*(p+len-1) != ')')
 	{
-//		*(p+len) = ')';
-//		len += 1;
+	//	*(p+len) = ')';
+	//	len += 1;
 		*(p+len) = '\n';
 	}
 	else
 	{
 		*(p+len) = '\n';
 	}
-	
+
 	for(i = 0;*p != '\n';p++)
 	{
 		switch(*p)
@@ -518,8 +525,8 @@ int readline (const char *const prompt)
 	 * it instead of entering it from scratch as desired.
 	 */
 	console_buffer[0] = '\0';
-	//printf("prompt = %c\n",prompt);
-	//printf("console_buffer = %c\n",console_buffer[0]);
+	//log_printf("prompt = %c\n",prompt);
+	//log_printf("console_buffer = %c\n",console_buffer[0]);
 	return readline_into_buffer(prompt, console_buffer);
 }
 
@@ -587,22 +594,24 @@ int run_command (const char *cmd, int flag)
 
 		/* find macros in this token and replace them */
 		process_macros (token, finaltoken);
+		//log_printf("[] [%s]\n",finaltoken);
 
 		/* Extract arguments */
 		/*argc is the count of command params*/
 		/*argv is the */
 		if ((argc = parse_line (finaltoken, argv)) == 0) {
 			rc = -1;	/* no command at all */
+			log_printf ("<=[AutoTestCommand]: no command at all. \n");
 			continue;
 		}
-		printf("argc = %d\n", argc);
+		//log_printf("argc = %d\n", argc);
 
 		/* Look up command in command table */
-		//printf("%s\n",argv[0]);
-		//printf("%s\n",argv[1]);
+		//log_printf("%s\n",argv[0]);
+		//log_printf("%s\n",argv[1]);
 		cmdtp = find_cmd(argv[0]);
 		if (cmdtp == NULL) {
-			printf ("[AutoTestCommand]: Unknown command %s\n", argv[0]);
+			log_printf ("<=[AutoTestCommand]: unknown command - [%s]\n", argv[0]);
 			rc = -1;	/* give up after bad command */
 			continue;
 		}
@@ -610,6 +619,7 @@ int run_command (const char *cmd, int flag)
 		/* found - check max args */
 		if (argc > cmdtp->maxargs) {
 			//cmd_usage(cmdtp);
+			log_printf("<=[AutoTestCommand]: find command but param error!\n");
 			rc = -1;
 			continue;
 		}
@@ -623,8 +633,8 @@ int run_command (const char *cmd, int flag)
 
 			rc = -1;
 
-			printf("[AutoTestCommand]: return = %d\n",value_return);
-			//printf("gxluar1\n");
+			log_printf("<=[AutoTestCommand]: return = %d\n",value_return);
+			//log_printf("gxluar1\n");
 		}
 		
 
@@ -679,7 +689,7 @@ void command_main_loop(void)
 			else
 			{
 				//rc = run_command (lastcommand, flag);
-				printf("Console Buffer: %s\n", console_buffer);
+				//log_printf("Console Buffer: <%s>\n", console_buffer);
 				rc = run_command (console_buffer, flag);
 			}
 			
@@ -690,7 +700,7 @@ void command_main_loop(void)
 		}
 		else if(error == chip_error_cmd_error)
 		{
-			printf("The command is wrong !Please put again !\n");
+			log_printf("The command is wrong !Please put again !\n");
 			continue;
 		}
 	}
@@ -706,10 +716,10 @@ int main(void)
 	extern cmd_tbl_t cmd_set_reg;
 	extern cmd_tbl_t cmd_get_reg;
 
-//	printf("register cmd begin.\n");
+	log_printf("register cmd begin.\n");
 	register_cmd(&cmd_set_reg);
 	register_cmd(&cmd_get_reg);
-//	printf("register cmd finish.\n");
+	log_printf("register cmd finish.\n");
 
 	command_main_loop();
 }

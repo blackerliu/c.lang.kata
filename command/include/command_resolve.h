@@ -82,7 +82,7 @@ typedef unsigned int CK_NATIVE_INT;
 #define MAX_CMDBUF_SIZE		256
 #define	GD_FLG_RELOC	0x00001		/* Code was relocated to RAM		*/
 #define CONFIG_SHOW_ACTIVITY
-#define CONFIG_AUTO_COMPLETE
+//#define CONFIG_AUTO_COMPLETE
 #define CREAD_HIST_CHAR		('!')
 
 #define HIST_MAX		20

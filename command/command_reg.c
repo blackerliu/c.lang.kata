@@ -1,5 +1,7 @@
-#include "autotest_command.h"
 #include <stddef.h>
+#include <stdio.h>
+
+#include "autotest_command.h"
 
 static unsigned int do_chip_set_reg(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {

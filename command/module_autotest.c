@@ -19,7 +19,9 @@
 
 /* Includes ---------------------------------------------------------------- */
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "autotest_command.h"
 
@@ -301,7 +303,7 @@ int readline_into_buffer (const char *const prompt, char * buffer)
 	if (prompt) 
 	{
 		plen = strlen (prompt);
-		printf(prompt);
+		printf("%s",prompt);
 	}
 	col = plen;
 	for (;;) 

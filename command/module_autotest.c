@@ -1,12 +1,12 @@
 /******************************************************************************
 *                   CONFIDENTIAL                                
 *        Hangzhou NationalChip Science and Technology Co., Ltd.             
-*                      (C)2010, All right reserved
+*                      (C)2010-2020, All right reserved
 *******************************************************************************
 
 *******************************************************************************
-* File Name :   main.c
-* Author    :   W.L.M
+* File Name :   module_command.c
+* Author    :   Liujh
 * Project   :   
 * Subpro    :   
 *******************************************************************************
@@ -50,17 +50,6 @@ static unsigned int hist_num ;
 static char* hist_list[HIST_MAX];
 static char hist_lines[HIST_MAX][HIST_SIZE];
 
-
-#define putnstr(str,n)	do {			\
-		log_printf ("%.*s", (int)n, str);	\
-	} while (0)
-
-
-#define getcmd_putch(ch)	putchar(ch)
-#define getcmd_getch()		getchar()
-#define getcmd_cbeep()		getcmd_putch('\a')
-
-#define ckcore
 /*****************************************************************
 * Function 		:delete_char
 * Description 	:

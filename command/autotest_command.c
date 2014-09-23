@@ -20,6 +20,7 @@ unsigned int __command_list_used = 0;
 * Return		:
 * Others		:
 *************************************************************************/
+#if 0
 static void print_argv(const char *banner, const char *leader, const char *sep, int linemax, char *argv[])
 {
 	int ll = leader != NULL ? strlen(leader) : 0;
@@ -46,7 +47,7 @@ static void print_argv(const char *banner, const char *leader, const char *sep, 
 	}
 	printf("\n");
 }
-
+#endif
 
 /*************************************************************************
 * Function		:find_common_prefix
@@ -55,6 +56,7 @@ static void print_argv(const char *banner, const char *leader, const char *sep, 
 * Return		:
 * Others		:
 *************************************************************************/
+#if 0
 static int find_common_prefix(char *argv[])
 {
 	int i, len;
@@ -76,6 +78,7 @@ static int find_common_prefix(char *argv[])
 	}
 	return len;
 }
+#endif
 
 
 /*************************************************************************
@@ -85,6 +88,7 @@ static int find_common_prefix(char *argv[])
 * Return		:
 * Others		:
 *************************************************************************/
+#if 0
 static int make_argv(char *s, int argvsz, char *argv[])
 {
 	int argc = 0;
@@ -114,6 +118,7 @@ static int make_argv(char *s, int argvsz, char *argv[])
 
 	return argc;
 }
+#endif
 
 /***************************************************************************
 * Function		:complete_cmdv
@@ -122,6 +127,7 @@ static int make_argv(char *s, int argvsz, char *argv[])
 * Return		:
 * Others		:
 ***************************************************************************/
+#if 0
 static int complete_cmdv(int argc, char *argv[], char last_char, int maxv, char *cmdv[])
 {
 	cmd_tbl_t *cmdtp;
@@ -193,6 +199,8 @@ static int complete_cmdv(int argc, char *argv[], char last_char, int maxv, char 
 	cmdv[n_found] = NULL;
 	return n_found;
 }
+
+#endif
 
 /***************************************************************************
  * Function 	:find_cmd_tbl

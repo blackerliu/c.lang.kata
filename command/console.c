@@ -1,6 +1,6 @@
 #include "command_resolve.h"
 #include "command.h"
-#include "stddef.h"
+#include <stddef.h>
 
 static int ctrlc_disabled = 0;	/* see disable_ctrl() */
 static int ctrlc_was_pressed = 0;
@@ -10,8 +10,6 @@ int had_ctrlc (void)
 	return ctrlc_was_pressed;
 }
 
-//unsigned int gBootSystemClock = 27000000;
-//
 void uart_init(void)
 {
 

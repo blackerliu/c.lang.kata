@@ -20,7 +20,7 @@
 /* Includes ---------------------------------------------------------------- */
 #include "command.h"
 #include "command_resolve.h"
-#include "stddef.h"
+#include <stddef.h>
 
 /* Private Macros --------------------------------------------------------- */
 

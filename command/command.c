@@ -1,7 +1,7 @@
 //#include <stdio.h>
 //#include <string.h>
 
-#include "stddef.h"
+#include <stddef.h>
 #include "command.h"
 
 #include "command_resolve.h"
@@ -288,91 +288,4 @@ int cmd_usage(char *name)
 	return 0;
 }
 
-
-int cmd_auto_complete(const char *const prompt, char *buf, int *np, int *colp)
-{
-	int n = *np, col = *colp;
-	char *argv[CONFIG_SYS_MAXARGS + 1];		/* NULL terminated	*/
-	char *cmdv[20];
-	char *s, *t;
-	const char *sep;
-	int i, j, k, len, seplen, argc;
-	int cnt;
-	char last_char;
-
-	if (strcmp(prompt, CONFIG_SYS_PROMPT) != 0)
-		return 0;	/* not in normal console */
-
-	cnt = strlen(buf);
-	if (cnt >= 1)
-		last_char = buf[cnt - 1];
-	else
-		last_char = '\0';
-
-	/* copy to secondary buffer which will be affected */
-	strcpy(tmp_buf, buf);
-
-	/* separate into argv */
-	argc = make_argv(tmp_buf, sizeof(argv)/sizeof(argv[0]), argv);
-
-	/* do the completion and return the possible completions */
-	i = complete_cmdv(argc, argv, last_char, sizeof(cmdv)/sizeof(cmdv[0]), cmdv);
-
-	/* no match; bell and out */
-	if (i == 0) {
-		if (argc > 1)	/* allow tab for non command */
-			return 0;
-		putc('\a');
-		return 1;
-	}
-
-	s = NULL;
-	len = 0;
-	sep = NULL;
-	seplen = 0;
-	if (i == 1) { /* one match; perfect */
-		k = strlen(argv[argc - 1]);
-		s = cmdv[0] + k;
-		len = strlen(s);
-		sep = " ";
-		seplen = 1;
-	} else if (i > 1 && (j = find_common_prefix(cmdv)) != 0) {	/* more */
-		k = strlen(argv[argc - 1]);
-		j -= k;
-		if (j > 0) {
-			s = cmdv[0] + k;
-			len = j;
-		}
-	}
-
-	if (s != NULL) {
-		k = len + seplen;
-		/* make sure it fits */
-		if (n + k >= CONFIG_SYS_CBSIZE - 2) {
-			putc('\a');
-			return 1;
-		}
-
-		t = buf + cnt;
-		for (i = 0; i < len; i++)
-			*t++ = *s++;
-		if (sep != NULL)
-			for (i = 0; i < seplen; i++)
-				*t++ = sep[i];
-		*t = '\0';
-		n += k;
-		col += k;
-		puts(t - k);
-		if (sep == NULL)
-			putc('\a');
-		*np = n;
-		*colp = col;
-	} else {
-		print_argv(NULL, "  ", " ", 78, cmdv);
-
-		puts(prompt);
-		puts(buf);
-	}
-	return 1;
-}
 

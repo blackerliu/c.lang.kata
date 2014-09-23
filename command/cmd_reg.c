@@ -1,5 +1,5 @@
 #include "command.h"
-#include "stddef.h"
+#include <stddef.h>
 
 unsigned int do_chip_set_reg(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {

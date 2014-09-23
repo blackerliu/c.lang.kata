@@ -12,7 +12,7 @@ CPPFLAGS = -I include
 CFLAGS  =  $(CPPFLAGS)  -r -c  -O0 -g
 
 all: 
-	$(CC) -Iinclude -g -static -o main module_cmd.c command.c console.c cmd_reg.c 
+	$(CC) -g -static -o main module_autotest.c autotest_command.c autotest_console.c command_reg.c 
 
 main.elf : $(COBJ) 
 	$(LD)  $^ -o $@ \
@@ -21,21 +21,8 @@ main.elf : $(COBJ)
 %.o : %.c	
 	$(CC) -g $(CFLAGS) $< -o $@
 
-%.o : %.S
-	$(CC) $(CFLAGS) $< -o $@
-
 -include $(subst .c,.d,$(SOURCE))
 -include $(subst .S,.d,$(SSOURCE))
-
-#%.d : %.c
-#	$(CC) $(CPPFLAGS) -M $< > $@.$$$$;\
-#	sed 's,\($*\)\.o[:]*,\1.o $@ : ,g' <$@.$$$$ > $@;\
-#	rm -f $@.$$$$
-
-#%.d : %.S
-#	$(CC) $(CPPFLAGS) -M $< > $@.$$$$;\
-#	sed 's,\($*\)\.o[:]*,\1.o $@ : ,g' <$@.$$$$ > $@;\
-#	rm -f $@.$$$$
 
 .PHONY:clean 
 clean:

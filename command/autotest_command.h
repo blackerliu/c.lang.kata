@@ -1,13 +1,13 @@
-#ifndef __COMMAND_H_
-#define __COMMAND_H_
+#ifndef __AUTOTEST_COMMAND_H_
+#define __AUTOTEST_COMMAND_H_
 
 #define CONFIG_SYS_PROMPT       "=>"            /* Monitor Command Prompt       */
-#define CMD_FLAG_REPEAT         0x0001                  /* repeat last command          */
+#define CMD_FLAG_REPEAT         0x0001          /* repeat last command          */
 #define CONFIG_SYS_CBSIZE                       256
 #define CTL_BACKSPACE           ('\b')
 #define MAX_CMDBUF_SIZE         256
 #define CONFIG_SYS_MAXARGS              16
-#define GD_FLG_RELOC    0x00001         /* Code was relocated to RAM            */
+#define GD_FLG_RELOC    0x00001         	/* Code was relocated to RAM            */
 
 #define HIST_MAX                20
 #define HIST_SIZE               MAX_CMDBUF_SIZE
